@@ -4,8 +4,9 @@ import uvicorn
 import os
 import cv2
 import numpy as np
+import urllib.request
 
-app = FastAPI(title="KrvE Real-Time Deep-Tech AI Engine", version="3.5.0")
+app = FastAPI(title="KrvE Real-Time Deep-Tech AI Engine", version="3.8.0")
 
 # Security Protocols for Shopify Communication
 app.add_middleware(
@@ -19,8 +20,15 @@ app.add_middleware(
 UPLOAD_DIR = "./temp_framework_scans"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Load standard OpenCV Face Detection Model (Crash-proof on Python 3.14)
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default')
+# 🚀 Dynamic URL Model Download to bypass local path issues
+CASCADE_URL = "https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml"
+CASCADE_PATH = "./haarcascade_frontalface_default.xml"
+
+if not os.path.exists(CASCADE_PATH):
+    print("[KrvE AI] Downloading stable face tracking model directly from open-source repository...")
+    urllib.request.urlretrieve(CASCADE_URL, CASCADE_PATH)
+
+face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
 @app.post("/api/v1/generate-mesh")
 async def generate_user_mesh(
@@ -55,27 +63,7 @@ async def generate_user_mesh(
         # 4. Compute realistic measurements matrix based on height
         chest_calc = f"{round(height * 0.22, 1)} IN"
         waist_calc = f"{round(height * 0.18, 1)} IN"
-        hip_calc = f"{round(height * 0.23, 1)} IN"
-        
-        recommended = "M"
-        if height > 180: recommended = "XL"
-        elif height < 170: recommended = "S"
-
-        # 5. Return dynamic payload target pack to Shopify frontend
-        return {
-            "status": "success",
-            "message": status_msg,
-            "chest": chest_calc,
-            "waist": waist_calc,
-            "hip": hip_calc,
-            "recommended_size": f"KRVE MATCH {recommended}",
-            "total_extracted_face_nodes": len(face_coordinates),
-            "gltf_model_url": "https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-        }
-        
-    except Exception as e:
-        print(f"CRITICAL FAULT: {str(e)}")
-        return {"status": "error", "message": str(e)}
+        hip_calc = f"{round(height * 0
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
