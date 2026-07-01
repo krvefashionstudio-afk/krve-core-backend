@@ -106,18 +106,28 @@ async def generate_user_mesh(
         return {"status": "error", "message": str(e)}
 from fastapi import Form, UploadFile, File
 
+# Baaki upar ka code waise hi rahega...
+
 @app.post("/api/v1/generate-mesh")
 async def generate_mesh(
-    height: float = Form(...),
+    height: str = Form(...),
     image: UploadFile = File(...)
 ):
-    print(f"Received Image for processing: {image.filename}, Height: {height}")
+    try:
+        print(f"KrvE Log Trace - Image Received: {image.filename}, Height: {height}")
+        h_float = float(height)
+    except Exception:
+        h_float = 175.0
+
     return {
         "modelUrl": "https://models.readyplayer.me/648970e79148d4db99484dfa.glb?meshLod=0&pose=A",
-        "chest": f"{round(height * 0.22, 1)} IN",
-        "waist": f"{round(height * 0.183, 1)} IN",
-        "hip": f"{round(height * 0.228, 1)} IN",
-        "size": "KRVE MATCH M" if height <= 175 else "KRVE MATCH L"
+        "chest": f"{round(h_float * 0.22, 1)} IN",
+        "waist": f"{round(h_float * 0.183, 1)} IN",
+        "hip": f"{round(h_float * 0.228, 1)} IN",
+        "size": "KRVE MATCH M" if h_float <= 175 else "KRVE MATCH L"
     }
+
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
