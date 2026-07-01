@@ -51,7 +51,7 @@ async def generate_user_mesh(
             "hip": hip_val,
             "recommended_size": "KRVE MATCH " + recommended,
             "total_extracted_face_nodes": face_nodes,
-            "gltf_model_url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avatar/glTF-Binary/Avatar.glb"
+            "gltf_model_url": "https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/CesiumMan/glTF-Binary/CesiumMan.glb"
         }
         
     except Exception as e:
