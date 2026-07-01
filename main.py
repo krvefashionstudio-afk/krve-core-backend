@@ -103,6 +103,20 @@ async def generate_user_mesh(
     except Exception as e:
         print("CRITICAL DEFORMATION FAULT: " + str(e))
         return {"status": "error", "message": str(e)}
+from fastapi import Form, UploadFile, File
 
+@app.post("/api/v1/generate-mesh")
+async def generate_mesh(
+    height: float = Form(...),
+    image: UploadFile = File(...)
+):
+    print(f"Received Image for processing: {image.filename}, Height: {height}")
+    return {
+        "modelUrl": "https://models.readyplayer.me/648970e79148d4db99484dfa.glb?meshLod=0&pose=A",
+        "chest": f"{round(height * 0.22, 1)} IN",
+        "waist": f"{round(height * 0.183, 1)} IN",
+        "hip": f"{round(height * 0.228, 1)} IN",
+        "size": "KRVE MATCH M" if height <= 175 else "KRVE MATCH L"
+    }
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
